@@ -28,6 +28,12 @@ global mat_suff;
 mat_suff = sprintf('%s%d%s%d%s%02d', '_N', N_micro, '_liktype', likelihood_type, '_ext_', serial_id);
 save_folder = fullfile(pwd, 'results');
 
+% Declare global variables for extended micro parameters
+global alpha_c_R beta_c_R gamma_c_R sigma_c_R;
+global alpha_f_R beta_f_R gamma_f_R sigma_f_R;
+global alpha_c_NR beta_c_NR gamma_c_NR sigma_c_NR;
+global alpha_f_NR beta_f_NR gamma_f_NR sigma_f_NR;
+
 % Extended parameter names
 param_names = {'bbeta', 'ssigmaMeas', 'mu_l', ...
                'alpha_c_R', 'beta_c_R', 'gamma_c_R', 'sigma_c_R', ...
