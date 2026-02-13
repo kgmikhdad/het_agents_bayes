@@ -93,7 +93,7 @@ if micro_cfg.use_vars.income
         warnMsg = lastwarn;
         if ~isempty(warnMsg)
             warning('Improper asset density for epsilon=%d', eepsilon);
-            likes(ix) = eps; % Set to small value
+            likes(ix) = 1e-200; % Set to small value to avoid log(0)
             continue;
         end
         
@@ -102,7 +102,7 @@ if micro_cfg.use_vars.income
         R = smooth_draw_t{1,'r'};
         if R <= 0
             warning('R=%8.4f', R);
-            R = eps; % Avoid numerical issues
+            R = 1e-10; % Avoid numerical issues
         end
         
         sigma2 = -2*mu_l;
@@ -111,7 +111,7 @@ if micro_cfg.use_vars.income
         y_ix = y_data(ix);
         if any(y_ix <= 0)
             warning('Non-positive income values detected');
-            y_ix = max(y_ix, eps);
+            y_ix = max(y_ix, 1e-10); % Ensure positive
         end
         
         vals = linspace(min(log(y_ix)), max(log(y_ix)), num_interp);
@@ -128,7 +128,7 @@ if micro_cfg.use_vars.income
         % Add point mass contribution
         income_likes = max(income_likes ...
             + (mHat/sqrt(2*pi*sigma2))*exp(-0.5/sigma2*(log(y_ix)-log(c+R*aaBar)-mu_l).^2)./y_ix, ...
-            eps);
+            1e-200); % Clamp to small positive value to avoid log(0)
         
         likes(ix) = likes(ix) .* income_likes;
     end
@@ -173,7 +173,7 @@ if micro_cfg.use_vars.consumption
             
             % Normal density for log consumption
             consumption_likes = normpdf(log_c_obs, log_c_pred, sigma_c);
-            consumption_likes = max(consumption_likes, eps); % Clamp to avoid log(0)
+            consumption_likes = max(consumption_likes, 1e-200); % Clamp to avoid log(0)
             
             likes(ix_type) = likes(ix_type) .* consumption_likes;
         end
@@ -214,7 +214,7 @@ if micro_cfg.use_vars.food
                 log_cf_pred = alpha_f + beta_f * log_c_obs + gamma_f * eps_obs;
                 
                 food_likes = normpdf(log_cf_obs, log_cf_pred, sigma_f);
-                food_likes = max(food_likes, eps);
+                food_likes = max(food_likes, 1e-200); % Clamp to avoid log(0)
                 
                 likes(ix_type) = likes(ix_type) .* food_likes;
             end
@@ -226,8 +226,9 @@ if micro_cfg.use_vars.food
     end
 end
 
-% Final safeguard
-likes = max(likes, eps);
+% Final safeguard: ensure all likelihoods are positive and finite
+likes = max(likes, 1e-200);
+likes(~isfinite(likes)) = 1e-200;
 
 end
 

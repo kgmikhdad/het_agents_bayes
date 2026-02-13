@@ -34,6 +34,11 @@ param_struct.mu_l = mu_l;
 param_struct.num_mom = num_mom;
 param_struct.num_interp = num_interp;
 
+% Validate that micro_cfg exists in param_struct
+if ~isfield(param_struct, 'micro_cfg')
+    error('param_struct must contain micro_cfg field for extended likelihood');
+end
+
 % Create function handle for extended likelihood
 micro_lik_fct = @(smooth_draw_t, data_micro_t, param) likelihood_micro_ext(smooth_draw_t, data_micro_t, param);
 

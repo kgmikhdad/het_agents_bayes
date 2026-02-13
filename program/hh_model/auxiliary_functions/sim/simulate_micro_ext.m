@@ -62,8 +62,8 @@ for it = 1:T_micro
     eps_it = simul_data_micro_base(it, :, 1)';  % (N_micro, 1)
     y_it = simul_data_micro_base(it, :, 2)';    % (N_micro, 1)
     
-    % Generate type labels (Bernoulli)
-    type_it = (rand(N_micro, 1) < pi_true) + 0;  % 1 = Ricardian, 0 = Non-Ricardian
+    % Generate type labels (Bernoulli): 1 = Ricardian, 0 = Non-Ricardian
+    type_it = (rand(N_micro, 1) < pi_true) * 1.0;  % Convert logical to numeric
     
     % Get aggregate consumption for macro control (optional)
     if isfield(sim_struct, 'logAggregateConsumption')
@@ -113,10 +113,16 @@ for it = 1:T_micro
         log_c_type = alpha_c + beta_c * log_y_type + gamma_c * eps_type + u_c;
         c_it(ix_type) = exp(log_c_type);
         
+        % Ensure consumption is positive (numerical safeguard)
+        c_it(ix_type) = max(c_it(ix_type), 1e-10);
+        
         % Generate food consumption: log(cf) = alpha_f + beta_f*log(c) + gamma_f*eps + u_f
         u_f = sigma_f * randn(n_type, 1);
         log_cf_type = alpha_f + beta_f * log_c_type + gamma_f * eps_type + u_f;
         cf_it(ix_type) = exp(log_cf_type);
+        
+        % Ensure food consumption is positive (numerical safeguard)
+        cf_it(ix_type) = max(cf_it(ix_type), 1e-10);
     end
     
     % Assemble data matrix with columns: [type, eps, y, c, cf]
