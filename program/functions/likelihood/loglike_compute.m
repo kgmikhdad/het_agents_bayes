@@ -25,6 +25,22 @@ if isempty(data_micro) || isempty(ts_micro)
     return;
 end
 
+% Parse optional arguments: extract micro_lik_fct if provided
+micro_lik_fct = @likelihood_micro; % Default to original likelihood function
+if nargin >= 11 && ~isempty(varargin) && isa(varargin{1}, 'function_handle')
+    micro_lik_fct = varargin{1};
+    varargin = varargin(2:end); % Remove function handle from varargin
+end
+
+% Convert 3D numeric array to cell format for uniform handling
+if isnumeric(data_micro) && ndims(data_micro) == 3
+    data_micro_cell = cell(size(data_micro,1), 1);
+    for it = 1:size(data_micro,1)
+        data_micro_cell{it} = permute(data_micro(it,:,:), [2 3 1]);
+    end
+    data_micro = data_micro_cell;
+end
+
 T_micro = length(ts_micro);
 nobs = dataset_.nobs;
 
@@ -67,7 +83,7 @@ parfor i_draw = 1:num_smooth_draws % For each smoothing draw...
         for it = 1:T_micro
             
             % Likelihood
-            the_likes = likelihood_micro(the_smooth_draw_tab(it,:), permute(data_micro(it,:,:), [2 3 1]), param);
+            the_likes = micro_lik_fct(the_smooth_draw_tab(it,:), data_micro{it}, param);
             
             % Log likelihood
             the_loglikes_micro_draw_t = log(the_likes);
