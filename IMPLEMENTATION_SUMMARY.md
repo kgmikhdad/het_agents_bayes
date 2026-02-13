@@ -12,21 +12,21 @@ This implementation extends the household micro block to use richer survey micro
 - Maintains full backward compatibility with existing code
 - All original functionality preserved
 
-### New Files (10 files)
+### New Files (11 files)
 
 #### Core Extended Functionality
-1. **`program/hh_model/auxiliary_functions/likelihood/likelihood_micro_ext.m`** (241 lines)
+1. **`program/hh_model/auxiliary_functions/likelihood/likelihood_micro_ext.m`** (242 lines)
    - Extended micro likelihood with type labels, consumption, and food data
    - Reuses structural income density from original `likelihood_micro.m`
    - Adds measurement equations for consumption and food
    - Handles missing values robustly
 
-2. **`program/hh_model/auxiliary_functions/likelihood/aux_ll_ext.m`** (63 lines)
+2. **`program/hh_model/auxiliary_functions/likelihood/aux_ll_ext.m`** (68 lines)
    - Wrapper for extended likelihood
    - Adds `logAggregateConsumption` to smoother variables
    - Packages parameters into struct format
 
-3. **`program/hh_model/auxiliary_functions/sim/simulate_micro_ext.m`** (130 lines)
+3. **`program/hh_model/auxiliary_functions/sim/simulate_micro_ext.m`** (136 lines)
    - Extended simulation function
    - Generates type labels, consumption, and food data
    - Returns cell array format for variable sample sizes
@@ -61,9 +61,13 @@ This implementation extends the household micro block to use richer survey micro
    - Parameter definitions
    - Usage examples
 
-10. **`README.md`** (updated)
+10. **`README.md`** (updated, +31 lines)
     - Added section on extended model
     - Updated table of contents
+
+11. **`IMPLEMENTATION_SUMMARY.md`** (163 lines)
+    - Detailed implementation summary
+    - Design decisions and statistics
 
 ## Key Design Decisions
 
@@ -152,10 +156,10 @@ All original functionality preserved:
 
 ## Summary Statistics
 
-- **Total changes**: 11 files
-- **New files**: 10
+- **Total changes**: 12 files
+- **New files**: 11
 - **Modified files**: 1
-- **Lines added**: 1,318
+- **Lines added**: 1,493
 - **Lines removed**: 3
 - **Minimal core changes**: ✓
 - **Backward compatible**: ✓
